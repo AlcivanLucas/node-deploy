@@ -1,0 +1,31 @@
+version: "3.8"
+services:
+  db-postgres:
+    image: postgres:alpine
+    container_name: db-postgres
+    restart: always  # sempre que o container for parado ele vai iniciar novamente
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432" 
+    volumes:
+      - ./data:/var/lib/postgresql/data
+volumes:
+  data:
+
+
+# para instaar as dependencias presentes no package.json é so rodar o camndo "npm install"
+
+# sudo docker-compose up : mapeia o arquivo docker-compose.yml e sobe os containers
+
+# sudo docker-compose up -d : sobe os containers em segundo plano
+# sudo docker ps: lista os containers ativos
+
+
+# Docker é uma plataforma de código aberto que simplifica o processo de desenvolvimento, 
+# implantação e execução de aplicativos em contêineres. Contêineres são ambientes isolados e 
+# leves que empacotam tudo o que um aplicativo precisa para ser executado, incluindo código, 
+# bibliotecas, ferramentas e dependências, garantindo que o aplicativo funcione de maneira
+#  consistente em diferentes ambientes.

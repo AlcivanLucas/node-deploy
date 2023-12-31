@@ -1,0 +1,68 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+model User{
+  id String @id @default(uuid())
+  name String
+  email String @unique
+  password String
+  // password String? o ponto de interrogação sifnifica que o campo é opcional
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+
+model Discipline { // Gera a tabela dos discipline no banco de dados
+  id         String   @id @default(uuid())
+  title      String
+  created_at DateTime
+
+  dayDisciplines DayDiscipline[]
+  weekDays DisciplineWeekDays[]
+
+  @@map("disciplines")// muda o nome da tabela no banco de dados, para diderenciar do model
+}
+
+model DisciplineWeekDays {// realaciona os hábitos com os dias da semana que ocorre, sua recorrência 
+  id       String @id @default(uuid())
+  discipline_id String
+  week_day Int
+
+  discipline Discipline @relation(fields: [discipline_id], references: [id])
+
+  @@unique([discipline_id, week_day])
+  @@map("discipline_week_days")
+}
+
+model Day { // Gera a tabela dos dias que tem hábitos no BD 
+  id   String   @id @default(uuid())
+  date DateTime // faz com que só registre dias que tenham hábitos, não registra dias sem hábitos
+
+  dayDisciplines DayDiscipline[]
+
+  @@unique([date]) //esse indice é para que não se repita a data
+  @@map("days") // muda o nome da tabela no banco de dados
+}
+
+model DayDiscipline { // Gera a tabela de relacionamento entre os hábitos e os dias no banco de dados
+  id String @id @default(uuid())
+
+  day_id   String
+  discipline_id String
+
+  day   Day   @relation(fields: [day_id], references: [id])
+  discipline Discipline @relation(fields: [discipline_id], references: [id])
+
+  @@unique([day_id, discipline_id])
+  @@map("day_disciplines")
+}
+
+// npm prisma migrate dev --name init : cria a primeira migração que é a criação do DB apartir do schema em TS 
