@@ -20,7 +20,6 @@ export async function appRoutes(app: FastifyInstance) {
         //zera a hr, min, seg: 00:00:00, para que a disciplina apareça no msm dia que foi criada
         const today = dayjs().startOf('day').toDate()
 
-
         await prisma.discipline.create({
             data: {
                 title,
@@ -34,7 +33,6 @@ export async function appRoutes(app: FastifyInstance) {
                 }
             }
         })
-
     })
 
     // rota responsável por criar usuários
@@ -43,9 +41,6 @@ export async function appRoutes(app: FastifyInstance) {
             name: z.string(),
             password: z.string(),
             email: z.string().email(),
-
-    
-
         })
 
         const { name,email,password} = createUserBody.parse(request.body)
@@ -78,6 +73,7 @@ export async function appRoutes(app: FastifyInstance) {
             }
         })
     })
+
 
     // rota responsável por busta hábitos de um dia específico
     app.get('/day', async (request) => {
