@@ -16,7 +16,7 @@ volumes:
   data:
 
 
-# para instaar as dependencias presentes no package.json é so rodar o camndo "npm install"
+# para instalar as dependencias presentes no package.json é so rodar o camndo "npm install"
 
 # sudo docker-compose up : mapeia o arquivo docker-compose.yml e sobe os containers
 
