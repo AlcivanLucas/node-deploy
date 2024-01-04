@@ -17,6 +17,7 @@ model User{
   // password String? o ponto de interrogação sifnifica que o campo é opcional
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+  @@map("users")
 }
 
 
