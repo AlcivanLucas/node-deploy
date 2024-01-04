@@ -11,11 +11,5 @@
             "src": "(.*)",
             "dest": "src/routes.ts"
         }
-    ],
-    "rewrites": [
-        {
-            "source": "/(.*)",
-            "destination": "src/serverless.js"
-        }
     ]
 }
