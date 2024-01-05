@@ -1,14 +1,16 @@
 import dayjs from "dayjs"
-import { FastifyInstance } from "fastify"
+// import { FastifyInstance } from "fastify"
+import { Request, Response } from 'express'; // Importando Request e Response do Express
 import { z } from 'zod' // biblioteca para validação de dados
 import { prisma } from "./lib/prisma"
 
 // estou usando PostegreSql.
 
-export async function appRoutes(app: FastifyInstance) {
-
+// export async function appRoutes(app: FastifyInstance) {
+export function appRoutes(app: any) {
     // rota responsável por criar disciplinas
-    app.post('/disciplines', async (request) => {
+    // app.post('/disciplines', async (request) => {
+    app.post('/disciplines', async (request: Request, response: Response) => {
         const createDisciplineBody = z.object({
             title: z.string(),
             weekDays: z.array(
@@ -38,7 +40,8 @@ export async function appRoutes(app: FastifyInstance) {
     })
 
     // rota responsável por criar usuários
-    app.post('/users', async (request) => {
+    // app.post('/users', async (request) => {
+    app.post('/users', async (request: Request, response: Response) => {
         const createUserBody = z.object({
             name: z.string(),
             password: z.string(),
@@ -62,7 +65,8 @@ export async function appRoutes(app: FastifyInstance) {
     })
 
     // rota responsável deletar disciplinas *em desenvolvimento
-    app.delete('/deletedisciplines', async (request) => {
+    // app.delete('/deletedisciplines', async (request) => {
+    app.delete('/deletedisciplines', async (request: Request, response: Response) => {
         const deleteDisciplineParams = z.object({
             id: z.string().uuid(),
         })
@@ -78,7 +82,8 @@ export async function appRoutes(app: FastifyInstance) {
 
 
     // rota responsável por busta hábitos de um dia específico
-    app.get('/day', async (request) => {
+    // app.get('/day', async (request) => {
+    app.get('/day', async (request: Request, response: Response) => {
         const getDayParams = z.object({
             date: z.coerce.date()
         })
@@ -123,7 +128,8 @@ export async function appRoutes(app: FastifyInstance) {
 
     // completar / não-completar um hábito, muda o status
     // caso queira mudar disciplinas retroativos assistir aula 03 minuto 7;00
-    app.patch('/disciplines/:id/toggle', async (request) => {
+    // app.patch('/disciplines/:id/toggle', async (request) => {
+    app.patch('/disciplines/:id/toggle', async (request: Request, response: Response) => {
 
         const toggleDisciplineParams = z.object({
             id: z.string().uuid(),
@@ -176,7 +182,8 @@ export async function appRoutes(app: FastifyInstance) {
 
     })
     // rota para buscar o sumario de disciplinas do dia especifico
-    app.get('/summary', async () => {
+    // app.get('/summary', async () => {
+    app.get('/summary', async (request: Request, response: Response) => {
         const summary = await prisma.$queryRaw`
             SELECT 
                 D.id,
