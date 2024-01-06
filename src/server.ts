@@ -21,9 +21,21 @@ app.use(cors());
 // Registra as rotas
 appRoutes(app);
 
-app.listen(3333, '0.0.0.0', () => {
-    console.log(`HTTP Server running on port 3333!`);
-});
+
+
+const start = (): void => {
+    try {
+        app.listen(3333, '0.0.0.0', () => {
+            console.log(`HTTP Server running on port 3333!`);
+        });
+    } catch (error) {
+      console.error(error);
+      process.exit(1);
+    }
+  };
+  start();
+
+
 
 
 // app.listen({
@@ -32,3 +44,5 @@ app.listen(3333, '0.0.0.0', () => {
 // }).then((url) => {
 //     console.log(`HTTP Server running on ${url}!`)
 // })
+
+// sudo lsof -i :3333 mostra quais aplicações estão usando a porta 3333

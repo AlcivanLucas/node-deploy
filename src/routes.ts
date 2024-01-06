@@ -1,9 +1,9 @@
 import dayjs from "dayjs"
 // import { FastifyInstance } from "fastify"
 import { Request, Response } from 'express'; // Importando Request e Response do Express
-import { z } from 'zod' // biblioteca para validação de dados
+import { z, AnyZodObject } from 'zod' // biblioteca para validação de dados
 import { prisma } from "./lib/prisma"
-
+import Express from "express";
 // estou usando PostegreSql.
 
 // export async function appRoutes(app: FastifyInstance) {
