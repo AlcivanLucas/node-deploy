@@ -5,9 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "tsx --watch src/server.ts",
+    "dev": "tsx src/server.ts",
     "vercel-build": "npx prisma migrate deploy",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "front":"vite ../Faltometro/Web/"
   },
   "keywords": [],
   "author": "",

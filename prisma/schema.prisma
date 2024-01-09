@@ -67,3 +67,5 @@ model DayDiscipline { // Gera a tabela de relacionamento entre os hábitos e os 
 }
 
 // npx prisma migrate dev --name init : cria a primeira migração que é a criação do DB apartir do schema em TS 
+// o "npx prisma migrate dev" verifica de precisa fazer alterações
+// e o "npx prisma migrate deploy" apenas faz as alterações
