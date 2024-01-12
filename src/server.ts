@@ -59,12 +59,12 @@ const start = (): void => {
 //  killall -9 node : mata todos os processos do node
 
 
-// app.post("/usuarios" ,(request,response) => {
-//   return response.json(request.body);
-// })
-// app.get("/", (req, res)=>{
-//   return res.json("servidor rodando por enquanto corretamente 🙏")
-// })
+app.post("/usuarios" ,(request,response) => {
+  return response.json(request.body);
+})
+app.get("/", (req, res)=>{
+  return res.json("servidor rodando por enquanto corretamente 🙏")
+})
 
 app.post('/disciplines', async (request: Request, response: Response) => {
   const createDisciplineBody = z.object({
