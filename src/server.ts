@@ -59,9 +59,9 @@ const start = (): void => {
 //  killall -9 node : mata todos os processos do node
 
 
-app.post("/usuarios" ,(request,response) => {
-  return response.json(request.body);
-})
+// app.post("/usuarios" ,(request,response) => {
+//   return response.json(request.body);
+// })
 app.get("/", (req, res)=>{
   return res.json("servidor rodando por enquanto corretamente 🙏")
 })
@@ -168,7 +168,7 @@ app.get('/day', async (request: Request, response: Response) => {
 
   // Limpar a declaração preparada após usá-la
   // Liberar a conexão com o banco de dados após usá-la
-  await prisma.$disconnect();
+//   await prisma.$disconnect();
 
   const day = await prisma.day.findUnique({
       where: {
@@ -269,7 +269,7 @@ app.get('/summary', async (request: Request, response: Response) => {
           ) as amount
       FROM days D
   `
-  await prisma.$disconnect();
+//   await prisma.$disconnect();
 
   return summary
 })
