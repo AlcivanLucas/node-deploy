@@ -63,7 +63,7 @@ const start = (): void => {
 //   return response.json(request.body);
 // })
 app.get("/", (req, res)=>{
-  return res.json("servidor rodando por enquanto corretamente 🙏")
+  return res.json("servidor rodando por enquanto corretamente... 🙏")
 })
 
 app.post('/disciplines', async (request: Request, response: Response) => {
@@ -141,13 +141,15 @@ app.delete('/deletedisciplines', async (request: Request, response: Response) =>
 })
 
 // rota responsável por busta hábitos de um dia específico
-// app.get('/day', async (request) => {
+
 app.get('/day', async (request: Request, response: Response) => {
   const getDayParams = z.object({
       date: z.coerce.date()
   })
-
+  
   const { date } = getDayParams.parse(request.query)
+
+  console.log(date)
 
   const parsedDate = dayjs(date).startOf('day')
 
