@@ -245,7 +245,7 @@ app.patch('/disciplines/:id/toggle', async (request: Request, response: Response
 
 })
 // rota para buscar o sumario de disciplinas do dia especifico
-// app.get('/summary', async () => {
+
 app.get('/summary', async (request: Request, response: Response) => {
   const summary = await prisma.$queryRaw`
       SELECT 
@@ -269,9 +269,9 @@ app.get('/summary', async (request: Request, response: Response) => {
           ) as amount
       FROM days D
   `
-//   await prisma.$disconnect();
 
-  return summary
+
+  return response.json(summary) 
 })
 
 
@@ -279,3 +279,6 @@ app.get('/summary', async (request: Request, response: Response) => {
 
 
 // ConnectorError(ConnectorError { user_facing_error: None, kind: QueryError(PostgresError { code: "42P05", message: "prepared statement "s0" already exists", severity: "ERROR", detail: None, column: None, hint: None }), transient: false })
+// npm cache clean --force
+// killall -9 node
+// sudo lsof -i :3333
