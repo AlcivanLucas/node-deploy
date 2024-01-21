@@ -9,29 +9,9 @@ import { Request, Response } from 'express'; // Importando Request e Response do
 import { z, AnyZodObject } from 'zod' // biblioteca para validação de dados
 import { prisma } from "./lib/prisma"
 
-
-
 const app = express();
 
 app.use(express.json());
-
-// appRoutes(app);
-
-
-// const app = Fastify()
-// import Fastify from "fastify"
-// import cors from "@fastify/cors"
-
-// app.register(cors, {
-//     origin: true,
-// })
-
-// Registra as rotas
-// app.register(appRoutes)
-
-
-
-
 
 const start = (): void => {
     try {
@@ -48,6 +28,14 @@ const start = (): void => {
 
 
 
+// Configurar headers CORS
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', 'https://faltometroserver.vercel.app/');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    next();
+});
+
 // app.listen({
 //     port: 3333,
 //     host: '0.0.0.0',
@@ -55,8 +43,6 @@ const start = (): void => {
 //     console.log(`HTTP Server running on ${url}!`)
 // })
 
-// sudo lsof -i :3333 mostra quais aplicações estão usando a porta 3333
-//  killall -9 node : mata todos os processos do node
 
 
 // app.post("/usuarios" ,(request,response) => {
@@ -278,9 +264,7 @@ app.get('/summary', async (request: Request, response: Response) => {
 
 
 
-
-
+// sudo lsof -i :3333 mostra quais aplicações estão usando a porta 3333
+//  killall -9 node : mata todos os processos do node
 // ConnectorError(ConnectorError { user_facing_error: None, kind: QueryError(PostgresError { code: "42P05", message: "prepared statement "s0" already exists", severity: "ERROR", detail: None, column: None, hint: None }), transient: false })
 // npm cache clean --force
-// killall -9 node
-// sudo lsof -i :3333
