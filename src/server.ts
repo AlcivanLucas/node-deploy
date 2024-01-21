@@ -1,6 +1,6 @@
 import { appRoutes } from "./routes"
 import express from 'express';
-// import cors from 'cors';
+import cors from 'cors';
 //o CORS diz quais aplicações podem acessar a nossa API
 
 import dayjs from "dayjs"
@@ -29,12 +29,12 @@ const start = (): void => {
 
 
 // Configurar headers CORS para permitir qualquer origem
-// app.use((req, res, next) => {
-//     res.header('Access-Control-Allow-Origin', '*');
-//     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-//     res.header('Access-Control-Allow-Headers', 'Content-Type');
-//     next();
-//   });
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    next();
+  });
 
   // Permitir qualquer origem
 // app.use(cors());
