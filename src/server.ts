@@ -1,6 +1,6 @@
 import { appRoutes } from "./routes"
 import express from 'express';
-import cors from 'cors';
+// import cors from 'cors';
 //o CORS diz quais aplicações podem acessar a nossa API
 
 import dayjs from "dayjs"
@@ -37,7 +37,7 @@ const start = (): void => {
 //   });
 
   // Permitir qualquer origem
-app.use(cors());
+// app.use(cors());
 
 // app.listen({
 //     port: 3333,
