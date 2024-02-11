@@ -24,11 +24,8 @@ const start = (): void => {
     }
   };
   start();
-// app.listen(3333, () => console.log("Server is running on port 3333"));
 
-
-
-// Configurar headers CORS para permitir qualquer origem
+// Configurar headers CORS para permitir origens abertas
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
@@ -36,54 +33,47 @@ app.use((req, res, next) => {
     next();
   });
 
-  // Permitir qualquer origem
-// app.use(cors());
-
-// app.listen({
-//     port: 3333,
-//     host: '0.0.0.0',
-// }).then((url) => {
-//     console.log(`HTTP Server running on ${url}!`)
-// })
-
-
-
-// app.post("/usuarios" ,(request,response) => {
-//   return response.json(request.body);
-// })
 app.get("/", (req, res)=>{
   return res.json("servidor rodando por enquanto corretamente... 🙏")
 })
 
 app.post('/disciplines', async (request: Request, response: Response) => {
-  const createDisciplineBody = z.object({
-      title: z.string(),
-      weekDays: z.array(
-          z.number().min(0).max(6)
-      )
+  try {
+    const createDisciplineBody = z.object({
+        title: z.string(),
+        weekDays: z.array(
+            z.number().min(0).max(6)
+        )
 
-  })
+    })
 
-  const { title, weekDays } = createDisciplineBody.parse(request.body)
+    const { title, weekDays } = createDisciplineBody.parse(request.body)
 
-  //zera a hr, min, seg: 00:00:00, para que a disciplina apareça no msm dia que foi criada
-  const today = dayjs().startOf('day').toDate()
+    //zera a hr, min, seg: 00:00:00, para que a disciplina apareça no msm dia que foi criada
+    const today = dayjs().startOf('day').toDate()
 
-  await prisma.discipline.create({
-      data: {
-          title,
-          created_at: today,
-          weekDays: {
-              create: weekDays.map(weekDay => {
-                  return {
-                      week_day: weekDay
-                  }
-              })
-          }
-      }
-  })
-   // Após criar a disciplina com sucesso, envie uma resposta de sucesso
-   return response.status(200).json({ message: 'Discipline created successfully' });
+    await prisma.discipline.create({
+        data: {
+            title,
+            created_at: today,
+            weekDays: {
+                create: weekDays.map(weekDay => {
+                    return {
+                        week_day: weekDay
+                    }
+                })
+            }
+        }
+    })
+    // Após criar a disciplina com sucesso, envie uma resposta de sucesso
+    return response.status(200).json({ message: 'Discipline created successfully' });    
+  } catch (error:any) {
+    console.error('Error:', error);
+    return response.status(400).json({
+        console: error.message, // ou uma mensagem de erro genérica, dependendo do seu caso
+    });
+  }
+
 })
 
 // rota responsável por criar usuários
@@ -130,139 +120,169 @@ app.delete('/deletedisciplines', async (request: Request, response: Response) =>
 })
 
 // rota responsável por busta hábitos de um dia específico
-
 app.get('/day', async (request: Request, response: Response) => {
+
+
+
   const getDayParams = z.object({
       date: z.coerce.date()
   })
-  
-  const { date } = getDayParams.parse(request.query)
 
-  console.log(date)
+  try {
+    const { date } = getDayParams.parse(request.query)
 
-  const parsedDate = dayjs(date).startOf('day')
+    console.log(date)
 
-  const weekDay = dayjs(parsedDate).get('day')
+    const parsedDate = dayjs(date).startOf('day')
 
-  const possibleDisciplines = await prisma.discipline.findMany({
-      where: {
-          created_at: {
-              lte: date,
-          },
-          weekDays: {
-              some: {
-                  week_day: weekDay,
-              }
-          }
-      }
-  });
+    const weekDay = dayjs(parsedDate).get('day')
 
-  // Limpar a declaração preparada após usá-la
-  // Liberar a conexão com o banco de dados após usá-la
-//   await prisma.$disconnect();
+    const possibleDisciplines = await prisma.discipline.findMany({
+        where: {
+            created_at: {
+                lte: date,
+            },
+            weekDays: {
+                some: {
+                    week_day: weekDay,
+                }
+            }
+        }
+    });
 
-  const day = await prisma.day.findUnique({
-      where: {
-          date: parsedDate.toDate(),
-      },
-      include: {
-          dayDisciplines: true
-      }
-  })
+    // Limpar a declaração preparada após usá-la
+    // Liberar a conexão com o banco de dados após usá-la
+    //   await prisma.$disconnect();
 
-  const completedDisciplines = day?.dayDisciplines.map(dayDiscipline => {
-      return dayDiscipline.discipline_id
-  })
+    const day = await prisma.day.findUnique({
+        where: {
+            date: parsedDate.toDate(),
+        },
+        include: {
+            dayDisciplines: true
+        }
+    })
 
-  return response.json({
-    possibleDisciplines,
-    completedDisciplines
-}); // Enviando a resposta ao cliente
+    const completedDisciplines = day?.dayDisciplines.map(dayDiscipline => {
+        return dayDiscipline.discipline_id
+    })
+
+    return response.json({
+        possibleDisciplines,
+        completedDisciplines
+    }); // Enviando a resposta ao cliente
+    
+  } catch (error: any) {
+    // Captura e trata qualquer erro ocorrido durante o processamento da rota
+    console.error('Error:', error);
+
+    // Retorna uma resposta de erro ao cliente
+    return response.status(400).json({
+        console: error.message, // ou uma mensagem de erro genérica, dependendo do seu caso
+         
+    });
+  }
 })
 
 // completar / não-completar um hábito, muda o status
 // caso queira mudar disciplinas retroativos assistir aula 03 minuto 7;00
-// app.patch('/disciplines/:id/toggle', async (request) => {
+
 app.patch('/disciplines/:id/toggle', async (request: Request, response: Response) => {
+  try {
+    // Definindo validação para o parâmetro 'id' na URL
+    const toggleDisciplineParams = z.object({
+        id: z.string().uuid(),
+    })
 
-  const toggleDisciplineParams = z.object({
-      id: z.string().uuid(),
-  })
+    const { id } = toggleDisciplineParams.parse(request.params)
 
-  const { id } = toggleDisciplineParams.parse(request.params)
+    // Obtem a data de hoje, zerando a hr, min, seg: 00:00:00
+    const today = dayjs().startOf('day').toDate()
 
-  const today = dayjs().startOf('day').toDate()
+    // Tentando encontrar um registro de 'day' correspondente à data de hoje
+    let day = await prisma.day.findUnique({
+        where: {
+            date: today
+        }
+    })
 
-  let day = await prisma.day.findUnique({
-      where: {
-          date: today
-      }
-  })
+    // Se não houver um registro de 'day' para a data de hoje, cria-se um novo registro
+    if (!day) {
+        day = await prisma.day.create({
+            data: {
+                date: today
+            }
+        })
+    }
 
-  if (!day) {
-      day = await prisma.day.create({
-          data: {
-              date: today
-          }
-      })
+    // Tentando encontrar uma entrada específica de 'dayDiscipline' para o 'day' e a disciplina fornecidos
+    const dayDiscipline = await prisma.dayDiscipline.findUnique({
+        where: {
+            day_id_discipline_id: {
+                day_id: day.id,
+                discipline_id: id
+            }
+        }
+    })
+
+    // Se 'dayDiscipline' existe, remove-se a marcação de completude
+    if (dayDiscipline) {
+        //remover a marcação de completo
+        await prisma.dayDiscipline.delete({
+            where: {
+                id: dayDiscipline.id,
+            }
+        })
+    } else {
+        // Se 'dayDiscipline' não existe, cria-se uma nova entrada para marcar a disciplina como completa
+        // Completar o hábito
+        await prisma.dayDiscipline.create({
+            data: {
+                day_id: day.id,
+                discipline_id: id
+            }
+        })
+    }
+  } catch (error: any) {
+    console.error('Error:', error);
+    return response.status(400).json({
+        console: error.message, // ou uma mensagem de erro genérica, dependendo do seu caso
+    });  
   }
-
-  const dayDiscipline = await prisma.dayDiscipline.findUnique({
-      where: {
-          day_id_discipline_id: {
-              day_id: day.id,
-              discipline_id: id
-          }
-      }
-  })
-
-  if (dayDiscipline) {
-      //remover a marcação de completo
-      await prisma.dayDiscipline.delete({
-          where: {
-              id: dayDiscipline.id,
-          }
-      })
-  } else {
-      // Completar o hábito
-      await prisma.dayDiscipline.create({
-          data: {
-              day_id: day.id,
-              discipline_id: id
-          }
-      })
-  }
-
-
 })
+
 // rota para buscar o sumario de disciplinas do dia especifico
-
 app.get('/summary', async (request: Request, response: Response) => {
-  const summary = await prisma.$queryRaw`
-      SELECT 
-          D.id,
-          D.date,
-          (
-              SELECT 
-                 cast(count(*) as float)
-              FROM day_disciplines DH
-              WHERE DH.day_id = D.id 
-          ) as completed,
-          (
-              SELECT
-                  cast(count(*) as float)
-              FROM discipline_week_days HWD
-              JOIN disciplines H
-                  ON H.id = HWD.discipline_id
-              WHERE  
-                  HWD.week_day = date_part('dow', D.date) - 1
-                  AND H.created_at <= D.date
-          ) as amount
-      FROM days D
-  `
-
-
-  return response.json(summary) 
+  try {
+    const summary = await prisma.$queryRaw`
+        SELECT 
+            D.id,
+            D.date,
+            (
+                SELECT 
+                    cast(count(*) as float)
+                FROM day_disciplines DH
+                WHERE DH.day_id = D.id 
+            ) as completed,
+            (
+                SELECT
+                    cast(count(*) as float)
+                FROM discipline_week_days HWD
+                JOIN disciplines H
+                    ON H.id = HWD.discipline_id
+                WHERE  
+                    HWD.week_day = date_part('dow', D.date) - 1
+                    AND H.created_at <= D.date
+            ) as amount
+        FROM days D
+    `
+    return response.json(summary)     
+  } catch (error: any) {
+    console.error('Error:', error);
+    return response.status(400).json({
+        console: error.message, // ou uma mensagem de erro genérica, dependendo do seu caso
+    });
+  }
 })
 
 
