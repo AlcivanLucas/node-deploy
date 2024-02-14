@@ -105,19 +105,27 @@ app.post('/users', async (request: Request, response: Response) => {
 
 // rota responsável deletar disciplinas *em desenvolvimento
 // app.delete('/deletedisciplines', async (request) => {
-app.delete('/deletedisciplines', async (request: Request, response: Response) => {
-  const deleteDisciplineParams = z.object({
-      id: z.string().uuid(),
-  })
-
-  const { id } = deleteDisciplineParams.parse(request.params)
-
-  await prisma.discipline.delete({
-      where: {
-          id
-      }
-  })
-})
+app.delete('/deletedisciplines/:id', async (request: Request, response: Response) => {
+    try {
+        const deleteDisciplineParams = z.object({
+        id: z.string().uuid(),
+        });
+    
+        const { id } = deleteDisciplineParams.parse(request.params);
+    
+        await prisma.$executeRaw`DELETE FROM discipline_week_days WHERE discipline_id = ${id}`;
+        await prisma.$executeRaw`DELETE FROM day_disciplines WHERE discipline_id = ${id}`;
+        await prisma.$executeRaw`DELETE FROM disciplines WHERE id = ${id}`;
+    
+        return response.status(200).send();
+    } catch (error) {
+        console.error('Error:', error);
+        return response.status(500).json({
+        error: 'An error occurred while deleting the discipline.',
+        });
+    }
+});
+      
 
 // rota responsável por busta hábitos de um dia específico
 app.get('/day', async (request: Request, response: Response) => {
