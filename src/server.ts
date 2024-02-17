@@ -117,7 +117,6 @@ app.post('/users', async (request: Request, response: Response) => {
 })
 
 // rota responsável deletar disciplinas *em desenvolvimento
-// app.delete('/deletedisciplines', async (request) => {
 app.delete('/deletedisciplines/:id', async (request: Request, response: Response) => {
     try {
         const deleteDisciplineParams = z.object({
