@@ -73,7 +73,20 @@ app.post('/disciplines', async (request: Request, response: Response) => {
         console: error.message, // ou uma mensagem de erro genérica, dependendo do seu caso
     });
   }
+})
 
+app.get('/disciplines', async (request: Request, response: Response) => {
+    try {
+        const disciplinesList = await prisma.$queryRaw`
+            SELECT * FROM disciplines;
+        `
+        return response.json(disciplinesList)
+    } catch (error:any) {
+        console.error('Error:',error)
+        return response.status(400).json({
+            console: error.message, // ou uma mensagem de erro genérica, dependendo do seu caso
+        })
+    }
 })
 
 // rota responsável por criar usuários
